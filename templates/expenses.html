@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Expenses
+{% endblock %}
+
+{% block main %}
+    <input type="text" placeholder="Name of Expense" name="name">
+    <input type="text" placeholder="Amount" name="amount">
+    <input type="radio" name="weekly" value="Weekly" id="weekly">
+    <label for="weekly">Weekly</label>
+    <input type="radio" name="biweekly" value="Bi-Weekly" id="biweekly">
+    <label for="biweekly">Bi-Weekly</label>
+    <input type="radio" name="monthly" value="Monthly" id="monthly">
+    <label for="monthly">Monthly</label>
+    <input type="radio" name="yearly" value="Yearly" id="yearly">
+    <label for="yearly">Yearly</label>
+    <input type="submit" value="Add" class="btn btn-primary">
+    <hr>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name of Expenses</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Frequency</th>
+            </tr>
+        </thead>
+    </table>
+{% endblock %}
