@@ -1,0 +1,15 @@
+.income-table {
+    margin-top: 50px;
+}
+
+.expense-table {
+    margin-top: 50px;
+}
+
+.tabs {
+    margin-bottom: 20px;
+}
+
+#remove {
+    display: none;
+}

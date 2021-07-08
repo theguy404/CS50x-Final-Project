@@ -134,9 +134,62 @@ def expenses():
     """Register expenses to account"""
     
     if request.method == "POST":
-        return TODO
+        
+        # check if user added a name to the expense
+        if not request.form.get("name") and not request.form.get("rname"):
+            return render_template("error.html", error="Must give the expense a name.")
+        
+        # if true then add to expenses
+        if request.form.get("name"):
+            
+            # check if user added an amount to the expense
+            if not request.form.get("amount"):
+                return render_template("error.html", error="Missing amount for the expense.")
+            
+            # check if user has chosen a frequency for this expense 
+            if not request.form.get("freq"):
+                return render_template("error.html", error="Please choose a frequency for this expense.")
+            
+            # check if amount is a valid number
+            test = request.form.get("amount").isdecimal()
+            if not test:
+                return render_template("error.html", error="Expense amount can only be numbers.")
+            
+            # check database for expense by this user with the same name
+            test = db.execute("SELECT * FROM expenses WHERE user_id = ? AND name = ?",
+                              int(session.get("user_id")),
+                              request.form.get("name"))
+            
+            # if found then do not add to account
+            if len(test) > 0:
+                return render_template("error.html", error="Expense by that name already exists.")
+            
+            # insert expense into the database
+            db.execute("INSERT INTO expenses (user_id, name, amount, frequency) VALUES (?, ?, ?, ?)",
+                       int(session.get("user_id")),
+                       request.form.get("name"),
+                       float(request.form.get("amount")),
+                       request.form.get("freq"))
+                       
+        # if false then remove expense
+        else:
+            
+            # remove chosen expense from the database
+            db.execute("DELETE FROM expenses WHERE user_id = ? AND name = ?",
+                       session.get("user_id"),
+                       request.form.get("rname"))
+        
+        # query the database for all expenses saves to users account
+        expenseItems = db.execute("SELECT * FROM expenses WHERE user_id = ?", session.get("user_id"))
+            
+        return render_template("expenses.html", expenseItems=expenseItems)
     else:
-        return render_template("expenses.html")
+        
+        # query the database for all expenses saves to users account
+        expenseItems = db.execute("SELECT * FROM expenses WHERE user_id = ?", session.get("user_id"))
+        
+        # load page passing in the expenses to template
+        return render_template("expenses.html", expenseItems=expenseItems)
 
 
 @app.route("/income", methods=["GET", "POST"])
@@ -145,9 +198,62 @@ def income():
     """Register income to account"""
     
     if request.method == "POST":
-        return TODO
+        
+        # check if user added a name to the income
+        if not request.form.get("name") and not request.form.get("rname"):
+            return render_template("error.html", error="Must give the income a name.")
+        
+        # if true then add to income
+        if request.form.get("name"):
+            
+            # check if user added an amount to the income
+            if not request.form.get("amount"):
+                return render_template("error.html", error="Missing amount for the income.")
+            
+            # check if user has chosen a frequency for this income
+            if not request.form.get("freq"):
+                return render_template("error.html", error="Please choose a frequency for this income.")
+            
+            # check if amount is a valid number
+            test = request.form.get("amount").isdecimal()
+            if not test:
+                return render_template("error.html", error="Income amount can only be numbers.")
+            
+            # check database for expense by this user with the same name
+            test = db.execute("SELECT * FROM income WHERE user_id = ? AND name = ?",
+                              int(session.get("user_id")),
+                              request.form.get("name"))
+            
+            # if found then do not add to account
+            if len(test) > 0:
+                return render_template("error.html", error="Income by that name already exists.")
+            
+            # insert income into the database
+            db.execute("INSERT INTO income (user_id, name, amount, frequency) VALUES (?, ?, ?, ?)",
+                       int(session.get("user_id")),
+                       request.form.get("name"),
+                       float(request.form.get("amount")),
+                       request.form.get("freq"))
+                       
+        # if false then remove income
+        else:
+            
+            # remove chosen income from the database
+            db.execute("DELETE FROM income WHERE user_id = ? AND name = ?",
+                       session.get("user_id"),
+                       request.form.get("rname"))
+        
+        # query the database for all income saves to users account
+        incomeItems = db.execute("SELECT * FROM income WHERE user_id = ?", session.get("user_id"))
+            
+        return render_template("income.html", incomeItems=incomeItems)
     else:
-        return render_template("income.html")
+        
+        # query the database for all income saves to users account
+        incomeItems = db.execute("SELECT * FROM income WHERE user_id = ?", session.get("user_id"))
+        
+        # load page passing in the expenses to template
+        return render_template("income.html", incomeItems=incomeItems)
 
 
 @app.route("/transactions", methods=["GET", "POST"])

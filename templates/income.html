@@ -5,5 +5,76 @@
 {% endblock %}
 
 {% block main %}
+    <div class="tabs">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" id="addtab" onclick=add()>Add</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="removetab" onclick=remove()>Remove</a>
+          </li>
+        </ul>        
+    </div>
+
+    <div class="container" id="add">
+        <form action="/income" method="POST">
+            <div class="form-group col-6">
+                <input type="text" placeholder="Name of Income" name="name" class="form-control" autocomplete="off">
+            </div>
+            <div class="form-group col-3">
+                <input type="text" placeholder="Amount" name="amount" class="form-control"  autocomplete="off">
+            </div>
+            <div class="form-group col-12">
+                <input type="radio" name="freq" value="Weekly" id="weekly">
+                <label for="weekly">Weekly</label>
+                <br>
+                <input type="radio" name="freq" value="Bi-Weekly" id="biweekly">
+                <label for="biweekly">Bi-Weekly</label>
+                <br>
+                <input type="radio" name="freq" value="Monthly" id="monthly">
+                <label for="monthly">Monthly</label>
+                <br>
+                <input type="radio" name="freq" value="Yearly" id="yearly">
+                <label for="yearly">Yearly</label>
+                <br>
+                <input type="submit" value="Add" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
     
+    <div class="container" id="remove">
+        <form action="/income" method="POST">
+            <div class="form-group col-6">
+                <select class="form-control" name="rname">
+                    <option selected disabled>Income</option>
+                    {% for item in incomeItems %}
+                        <option value="{{ item.name }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <input type="submit" value="Remove" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+
+    <div class="container income-table">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Name of Income</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Frequency</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in incomeItems %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>${{'%0.2f' % item.amount }}</td>
+                        <td>{{ item.frequency }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
