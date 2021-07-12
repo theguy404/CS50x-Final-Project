@@ -5,5 +5,84 @@
 {% endblock %}
 
 {% block main %}
-
+    <div class="row">
+        <div class="col-6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Name of Expenses</th>
+                        <th scope="col">Frequency</th>
+                        <th scope="col">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in expenseItems %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.frequency }}</td>
+                            <td>${{'%0.2f' % item.amount }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfooter>
+                    <tr>
+                        <td>Total</td>
+                        <td>Monthly</td>
+                        <td>${{'%0.2f' % expTotal }}</td>
+                    </tr>
+                </tfooter>
+            </table>
+        </div>
+        
+        <div class="col-6">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Name of Income</th>
+                        <th scope="col">Frequency</th>
+                        <th scope="col">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in incomeItems %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.frequency }}</td>
+                            <td>${{'%0.2f' % item.amount }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfooter>
+                    <tr>
+                        <td>Total</td>
+                        <td>Monthly</td>
+                        <td>${{'%0.2f' % incTotal }}</td>
+                    </tr>
+                </tfooter>
+            </table>
+        </div>
+    </div>
+    
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in transItems %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>${{'%0.2f' % item.amount }}</td>
+                        <td>{{ item.day }}/{{ item.month }}/{{ item.year }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

@@ -1,13 +1,13 @@
-.income-table {
-    margin-top: 50px;
-}
-
-.expense-table {
+.table-spacer {
     margin-top: 50px;
 }
 
 .tabs {
     margin-bottom: 20px;
+}
+
+.loginBtn {
+    text-align: center;
 }
 
 #remove {

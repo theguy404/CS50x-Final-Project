@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, render_template, session, request, redirect
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -33,7 +34,46 @@ db = SQL("sqlite:///main.db")
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+    
+    # query the database for all expenses saves to users account
+    expenseItems = db.execute("SELECT * FROM expenses WHERE user_id = ?;", session.get("user_id"))
+    
+    # get total amount of expenses
+    expTotal = 0
+    for i in range(len(expenseItems)):
+        if expenseItems[i]['frequency'] == "Weekly":
+            expTotal += expenseItems[i]['amount'] * 4
+        if expenseItems[i]['frequency'] == "Bi-Weekly":
+            expTotal += expenseItems[i]['amount'] * 2
+        if expenseItems[i]['frequency'] == "Monthly":
+            expTotal += expenseItems[i]['amount']
+        if expenseItems[i]['frequency'] == "Yearly":
+            expTotal += expenseItems[i]['amount'] / 12
+    
+    # query the database for all income saves to users account
+    incomeItems = db.execute("SELECT * FROM income WHERE user_id = ?;", session.get("user_id"))
+    
+    # get total amount of income
+    incTotal = 0
+    for i in range(len(incomeItems)):
+        if incomeItems[i]['frequency'] == "Weekly":
+            incTotal += incomeItems[i]['amount'] * 4
+        if incomeItems[i]['frequency'] == "Bi-Weekly":
+            incTotal += incomeItems[i]['amount'] * 2
+        if incomeItems[i]['frequency'] == "Monthly":
+            incTotal += incomeItems[i]['amount']
+        if incomeItems[i]['frequency'] == "Yearly":
+            incTotal += incomeItems[i]['amount'] / 12
+    
+    # query the database for all transactions saved to users account
+    transItems = db.execute("SELECT * FROM transactions WHERE user_id = ? ORDER BY trans_id DESC LIMIT 10;", session.get("user_id"))
+    
+    return render_template("index.html",
+                           expenseItems=expenseItems, 
+                           incomeItems=incomeItems, 
+                           transItems=transItems, 
+                           expTotal=expTotal,
+                           incTotal=incTotal)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -179,17 +219,11 @@ def expenses():
                        session.get("user_id"),
                        request.form.get("rname"))
         
-        # query the database for all expenses saves to users account
-        expenseItems = db.execute("SELECT * FROM expenses WHERE user_id = ?", session.get("user_id"))
-            
-        return render_template("expenses.html", expenseItems=expenseItems)
-    else:
-        
-        # query the database for all expenses saves to users account
-        expenseItems = db.execute("SELECT * FROM expenses WHERE user_id = ?", session.get("user_id"))
-        
-        # load page passing in the expenses to template
-        return render_template("expenses.html", expenseItems=expenseItems)
+    # query the database for all expenses saves to users account
+    expenseItems = db.execute("SELECT * FROM expenses WHERE user_id = ?", session.get("user_id"))
+    
+    # load page passing in the expenses to template
+    return render_template("expenses.html", expenseItems=expenseItems)
 
 
 @app.route("/income", methods=["GET", "POST"])
@@ -243,17 +277,11 @@ def income():
                        session.get("user_id"),
                        request.form.get("rname"))
         
-        # query the database for all income saves to users account
-        incomeItems = db.execute("SELECT * FROM income WHERE user_id = ?", session.get("user_id"))
-            
-        return render_template("income.html", incomeItems=incomeItems)
-    else:
-        
-        # query the database for all income saves to users account
-        incomeItems = db.execute("SELECT * FROM income WHERE user_id = ?", session.get("user_id"))
-        
-        # load page passing in the expenses to template
-        return render_template("income.html", incomeItems=incomeItems)
+    # query the database for all income saves to users account
+    incomeItems = db.execute("SELECT * FROM income WHERE user_id = ?", session.get("user_id"))
+    
+    # load page passing in the expenses to template
+    return render_template("income.html", incomeItems=incomeItems)
 
 
 @app.route("/transactions", methods=["GET", "POST"])
@@ -262,6 +290,71 @@ def transactions():
     """Display transactions from account"""
     
     if request.method == "POST":
-        return TODO
-    else:
-        return render_template("transactions.html")
+        
+        # check if a payment or income is chosen
+        if not request.form.get("iname") and not request.form.get("pname"):
+            return render_template("error.html", error="Must select an expense or income")
+        
+        # if a payment was selected
+        if request.form.get("pname"):
+            
+            # check to see if an amount is selected
+            if not request.form.get("pamount"):
+                return render_template("error.html", error="Payment amount missing.")
+            
+            # insert a new transaction
+            dt = datetime.datetime.today()
+            db.execute("INSERT INTO transactions (user_id, name, type, amount, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?);",
+                       session.get("user_id"),
+                       request.form.get("pname"),
+                       "Payment",
+                       request.form.get("pamount"),
+                       dt.day,
+                       dt.month,
+                       dt.year)
+            
+            # add new transaction ID to the expense
+            currentTrans = db.execute("SELECT MAX(trans_id) FROM transactions WHERE user_id = ?;", session.get("user_id"))
+            db.execute("UPDATE expenses SET last= ? WHERE user_id = ? AND name = ?",
+                       currentTrans[0]["MAX(trans_id)"],
+                       session.get("user_id"),
+                       request.form.get("pname"))
+            
+            
+        # if an income was selected
+        else:
+            
+            # check to see if an amount is selected
+            if not request.form.get("iamount"):
+                return render_template("error.html", error="Income amount missing.")
+            
+            # insert a new transaction
+            dt = datetime.datetime.today()
+            db.execute("INSERT INTO transactions (user_id, name, type, amount, day, month, year) VALUES (?, ?, ?, ?, ?, ?, ?);",
+                       session.get("user_id"),
+                       request.form.get("iname"),
+                       "Income",
+                       request.form.get("iamount"),
+                       dt.day,
+                       dt.month,
+                       dt.year)
+            
+            # add new transaction ID to the income
+            currentTrans = db.execute("SELECT MAX(trans_id) FROM transactions WHERE user_id = ?;", session.get("user_id"))
+            db.execute("UPDATE income SET last= ? WHERE user_id = ? AND name = ?",
+                       currentTrans[0]["MAX(trans_id)"],
+                       session.get("user_id"),
+                       request.form.get("iname"))
+            
+        
+    # query the database for all incomes saved to users account
+    incomeItems = db.execute("SELECT * FROM income WHERE user_id = ?", session.get("user_id"))
+    
+    # query the database for all expenses saved to users account
+    expenseItems = db.execute("SELECT * FROM expenses WHERE user_id = ?", session.get("user_id"))
+    
+    # query the database for all transactions saved to users account
+    transItems = db.execute("SELECT * FROM transactions WHERE user_id = ? ORDER BY trans_id DESC", session.get("user_id"))
+
+    # load page passing in the expenses to template
+    return render_template("transactions.html", expenseItems=expenseItems, incomeItems=incomeItems, transItems=transItems)

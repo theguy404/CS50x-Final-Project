@@ -1,4 +1,4 @@
-# Financial Planner
-#### Video Demo:  <URL HERE>
+# Financial Tracker
+#### Video Demo:  https://youtu.be/r8jilGVrCz8
 #### Description:
-TODO
+This flask application is used for storing and tracking expenses, income and payments to help people with their finances
