@@ -17,6 +17,15 @@
 * Flask [https://flask.palletsprojects.com/en/2.0.x/](https://flask.palletsprojects.com/en/2.0.x/)
 * SQLITE3 [https://www.sqlite.org/index.html](https://www.sqlite.org/index.html)
 
+## How to use this application:
+
+1. install the above softwares using their guides.
+2. Clone this repository 'git clone git@github.com:theguy404/CS50x-Final-Project.git'.
+3. run command 'Flask run'.
+4. open the link provided in the console inside a web browser.
+5. register an account.
+6. if successful this should land you on the main dashboard.
+
 ## Templates:
 
 * layout.html - This file is the navigation bar design for each of the pages.
