@@ -1,7 +1,6 @@
 # Financial Tracker
 #### Video Demo:  https://youtu.be/r8jilGVrCz8
-#### Description:
-This flask application is used for storing and tracking expenses, income and payments to help people with their finances.
+#### Description: This flask application is used for storing and tracking expenses, income and payments to help people with their finances.
 
 ## Technologies used:
 
@@ -14,9 +13,9 @@ This flask application is used for storing and tracking expenses, income and pay
 
 ## Requirements:
 
-CS50 Library [https://github.com/cs50/python-cs50](https://github.com/cs50/python-cs50)
-Flask [https://flask.palletsprojects.com/en/2.0.x/](https://flask.palletsprojects.com/en/2.0.x/)
-SQLITE3 [https://www.sqlite.org/index.html](https://www.sqlite.org/index.html)
+* CS50 Library [https://github.com/cs50/python-cs50](https://github.com/cs50/python-cs50)
+* Flask [https://flask.palletsprojects.com/en/2.0.x/](https://flask.palletsprojects.com/en/2.0.x/)
+* SQLITE3 [https://www.sqlite.org/index.html](https://www.sqlite.org/index.html)
 
 ## Templates:
 
